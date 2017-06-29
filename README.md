@@ -25,6 +25,9 @@ or put it as parameter.
 How to use this plugin
 ----------------------
 
+You can find instruction on how to add this plugin on
+[gradle plugin portal.](https://plugins.gradle.org/plugin/pl.unity.lazy-credentials)
+
 Basic usage is quite simple:
 
 ```
