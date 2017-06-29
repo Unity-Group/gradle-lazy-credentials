@@ -1,3 +1,7 @@
+plugins {
+	id "com.gradle.plugin-publish" version "0.9.7"
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
@@ -6,8 +10,6 @@ repositories {
 	jcenter()
 }
 
-group = 'pl.unity.gradle'
-version = '1.0-SNAPSHOT'
 
 def javaVersion = 1.7
 
@@ -38,4 +40,22 @@ publishing {
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '4.0'
+}
+
+
+group = 'pl.unity.gradle'
+version = '1.0-SNAPSHOT'
+
+pluginBundle {
+	website = 'http://www.unity.pl/'
+	vcsUrl = 'https://github.com/Unity-Group/gradle-lazy-credentials'
+	description = 'Evaluate your maven credentials settings only when it\'s necessary.'
+	tags = ['credentials', 'maven', 'lazy']
+
+	plugins {
+		lazyCredentialsPlugin {
+			id = 'pl.unity.lazy-credentials'
+			displayName = 'Maven Repository Lazy Credentials plugin'
+		}
+	}
 }
