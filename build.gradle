@@ -47,7 +47,7 @@ group = 'pl.unity.gradle'
 version = '1.0.1-SNAPSHOT'
 
 pluginBundle {
-	website = 'http://www.unity.pl/'
+	website = 'https://github.com/Unity-Group/gradle-lazy-credentials'
 	vcsUrl = 'https://github.com/Unity-Group/gradle-lazy-credentials'
 	description = 'Evaluate your maven credentials settings only when it\'s necessary.'
 	tags = ['credentials', 'maven', 'lazy']
