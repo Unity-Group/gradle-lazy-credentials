@@ -26,15 +26,20 @@ class PasswordPrompt {
 	private static Credentials promptForCredentials(Project project, String passwordProperty, String usernameProperty, boolean askForUsername) {
 		Credentials.CredentialsBuilder builder = Credentials.builder();
 		
-		if (askForUsername && hasProperty(project, usernameProperty)) {
-			askForUsername = false;
-			builder.username(getProperty(project, usernameProperty).toString());
+		if (!askForUsername && hasProperty(project, passwordProperty)) {
+			builder.password(getProperty(project, passwordProperty).toString());
+			return builder.build();
 		}
 		
 		if (hasProperty(project, passwordProperty) && hasProperty(project, usernameProperty)) {
 			builder.password(getProperty(project, passwordProperty).toString());
 			builder.username(getProperty(project, usernameProperty).toString());
 			return builder.build();
+		}
+		
+		if (askForUsername && hasProperty(project, usernameProperty)) {
+			askForUsername = false;
+			builder.username(getProperty(project, usernameProperty).toString());
 		}
 		
 		if (System.console() != null) {
@@ -122,7 +127,7 @@ class PasswordPrompt {
 	private static boolean hasProperty(Project project, String property) {
 		Project current = project;
 		do {
-			if (current.hasProperty(property)) {
+			if (current.getExtensions().getExtraProperties().has(property)) {
 				return true;
 			}
 			current = current.getRootProject();
@@ -134,7 +139,7 @@ class PasswordPrompt {
 	private static Object getProperty(Project project, String property) {
 		Project current = project;
 		do {
-			if (current.hasProperty(property)) {
+			if (current.getExtensions().getExtraProperties().has(property)) {
 				return current.getExtensions().getExtraProperties().get(property);
 			}
 			current = current.getRootProject();

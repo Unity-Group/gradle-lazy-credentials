@@ -39,13 +39,17 @@ public class PasswordPromptTest {
 	public void shouldShowDialog() {
 		// given
 		String passwordProperty = "passProp";
+		String userNameProperty = "username";
+		when(extraProperties.get(userNameProperty)).thenReturn("somename");
+		when(extraProperties.has(userNameProperty)).thenReturn(true);
 		
 		// when
-		String password = PasswordPrompt.promptForCredentials(project, passwordProperty).getPassword();
+		PasswordPrompt.Credentials credentials = PasswordPrompt.promptForCredentials(project, passwordProperty, userNameProperty);
 		
 		// then
-		System.out.println(password); // since this is run manually lets just look at it...
-		verify(extraProperties).set(passwordProperty, password);
+		System.out.println(credentials.getUsername()); // since this is run manually lets just look at it...
+		System.out.println(credentials.getPassword());
+		verify(extraProperties).set(passwordProperty, credentials.getPassword());
 	}
 	
 	@Before
