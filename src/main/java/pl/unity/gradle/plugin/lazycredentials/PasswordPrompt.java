@@ -26,25 +26,25 @@ class PasswordPrompt {
 	private static Credentials promptForCredentials(Project project, String passwordProperty, String usernameProperty, boolean askForUsername) {
 		Credentials.CredentialsBuilder builder = Credentials.builder();
 		
-		if (askForUsername && project.hasProperty(usernameProperty)) {
+		if (askForUsername && hasProperty(project, usernameProperty)) {
 			askForUsername = false;
-			builder.username(project.getExtensions().getExtraProperties().get(usernameProperty).toString());
+			builder.username(getProperty(project, usernameProperty).toString());
 		}
 		
-		if (project.hasProperty(passwordProperty) && project.hasProperty(usernameProperty)) {
-			builder.password(project.getExtensions().getExtraProperties().get(passwordProperty).toString());
-			builder.username(project.getExtensions().getExtraProperties().get(usernameProperty).toString());
+		if (hasProperty(project, passwordProperty) && hasProperty(project, usernameProperty)) {
+			builder.password(getProperty(project, passwordProperty).toString());
+			builder.username(getProperty(project, usernameProperty).toString());
 			return builder.build();
 		}
 		
 		if (System.console() != null) {
 			if (askForUsername) {
 				String username = System.console().readLine("\nPlease input username: ");
-				project.getExtensions().getExtraProperties().set(usernameProperty, username);
+				setProperty(project, usernameProperty, username);
 				builder.username(username);
 			}
 			String pass = new String(System.console().readPassword("\nPlease input password: "));
-			project.getExtensions().getExtraProperties().set(passwordProperty, pass);
+			setProperty(project, passwordProperty, pass);
 			builder.password(pass);
 			return builder.build();
 		}
@@ -102,12 +102,12 @@ class PasswordPrompt {
 			
 			String pass = new String(passwordField.getPassword());
 			builder.password(pass);
-			project.getExtensions().getExtraProperties().set(passwordProperty, pass);
+			setProperty(project, passwordProperty, pass);
 			
 			if (askForUsername) {
 				String username = usernameField.getText();
 				builder.username(username);
-				project.getExtensions().getExtraProperties().set(usernameProperty, username);
+				setProperty(project, usernameProperty, username);
 			}
 			
 			return builder.build();
@@ -117,6 +117,39 @@ class PasswordPrompt {
 		}
 
 		throw new IllegalArgumentException("No password provided, you can provide it by setting $passwordProperty property.");
+	}
+	
+	private static boolean hasProperty(Project project, String property) {
+		Project current = project;
+		do {
+			if (current.hasProperty(property)) {
+				return true;
+			}
+			current = current.getRootProject();
+		} while (current != null && current != current.getRootProject());
+		
+		return false;
+	}
+	
+	private static Object getProperty(Project project, String property) {
+		Project current = project;
+		do {
+			if (current.hasProperty(property)) {
+				return current.getExtensions().getExtraProperties().get(property);
+			}
+			current = current.getRootProject();
+		} while (current != null && current != current.getRootProject());
+		
+		throw new IllegalArgumentException("No property " + property + " found");
+	}
+	
+	private static void setProperty(Project project, String property, Object value) {
+		Project current = project;
+		while (current.getRootProject() != null && current != current.getRootProject()) {
+			current = current.getRootProject();
+		}
+		
+		current.getExtensions().getExtraProperties().set(property, value);
 	}
 	
 	@Data
