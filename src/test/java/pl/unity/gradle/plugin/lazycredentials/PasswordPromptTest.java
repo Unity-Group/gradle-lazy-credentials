@@ -25,6 +25,7 @@ import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,25 +41,21 @@ public class PasswordPromptTest {
 		// given
 		String passwordProperty = "passProp";
 		String userNameProperty = "username";
-		when(extraProperties.get(userNameProperty)).thenReturn("somename");
-		when(extraProperties.has(userNameProperty)).thenReturn(true);
+		project.getExtensions().getExtraProperties().set(userNameProperty, "somename");
 		
 		// when
 		PasswordPrompt.Credentials credentials = PasswordPrompt.promptForCredentials(project, passwordProperty, userNameProperty);
+		credentials = PasswordPrompt.promptForCredentials(project, passwordProperty, userNameProperty);
 		
 		// then
 		System.out.println(credentials.getUsername()); // since this is run manually lets just look at it...
 		System.out.println(credentials.getPassword());
-		verify(extraProperties).set(passwordProperty, credentials.getPassword());
 	}
 	
 	@Before
 	public void setUp() {
-		project = mock(Project.class);
-		// project.getExtensions().getExtraProperties().set(passwordProperty, pass);
-		ExtensionContainer extensionContainer = mock(ExtensionContainer.class);
-		when(project.getExtensions()).thenReturn(extensionContainer);
-		extraProperties = mock(ExtraPropertiesExtension.class);
-		when(extensionContainer.getExtraProperties()).thenReturn(extraProperties);
+		project = ProjectBuilder.builder()
+			.withParent(ProjectBuilder.builder().build())
+			.build();
 	}
 }

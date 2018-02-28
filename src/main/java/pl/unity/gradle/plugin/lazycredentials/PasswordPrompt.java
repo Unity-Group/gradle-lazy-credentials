@@ -130,8 +130,8 @@ class PasswordPrompt {
 			if (current.getExtensions().getExtraProperties().has(property)) {
 				return true;
 			}
-			current = current.getRootProject();
-		} while (current != null && current != current.getRootProject());
+			current = current.getParent();
+		} while (current != null);
 		
 		return false;
 	}
@@ -142,16 +142,16 @@ class PasswordPrompt {
 			if (current.getExtensions().getExtraProperties().has(property)) {
 				return current.getExtensions().getExtraProperties().get(property);
 			}
-			current = current.getRootProject();
-		} while (current != null && current != current.getRootProject());
+			current = current.getParent();
+		} while (current != null);
 		
 		throw new IllegalArgumentException("No property " + property + " found");
 	}
 	
 	private static void setProperty(Project project, String property, Object value) {
 		Project current = project;
-		while (current.getRootProject() != null && current != current.getRootProject()) {
-			current = current.getRootProject();
+		while (current.getParent() != null) {
+			current = current.getParent();
 		}
 		
 		current.getExtensions().getExtraProperties().set(property, value);
