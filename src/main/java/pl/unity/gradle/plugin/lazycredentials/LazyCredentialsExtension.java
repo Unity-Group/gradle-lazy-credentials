@@ -24,24 +24,27 @@ import groovy.lang.Closure;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LazyCredentialsExtension implements Configurable<LazyCredentialsExtension> {
+public class LazyCredentialsExtension implements Configurable<LazyCredentials> {
 	private final Project project;
 	
 	@Override
-	public LazyCredentialsExtension configure(Closure c) {
-		if (!Closure.class.isInstance(c.getDelegate()) ||
-			DefaultMavenArtifactRepository.class.isInstance(((Closure)c.getDelegate()))) {
-			throw new IllegalStateException("This extension can only be used in maven repository config.");
-		}
-		
+	public LazyCredentials configure(Closure c) {
 		LazyCredentials credentials = new LazyCredentials(project);
-		
-		Object originalDelegate = ((Closure)c.getDelegate()).getDelegate();
+
+		Object originalDelegate;
+		if (c.getDelegate() instanceof Closure) {
+			originalDelegate = ((Closure) c.getDelegate()).getDelegate();
+		} else {
+			originalDelegate = null;
+		}
+
 		c.setResolveStrategy(Closure.DELEGATE_FIRST);
 		c.setDelegate(credentials);
 		c.call();
-		
-		((DefaultMavenArtifactRepository) originalDelegate).setConfiguredCredentials(credentials);
-		return this;
+
+		if (originalDelegate instanceof DefaultMavenArtifactRepository) {
+			((DefaultMavenArtifactRepository) originalDelegate).setConfiguredCredentials(credentials);
+		}
+		return credentials;
 	}
 }
