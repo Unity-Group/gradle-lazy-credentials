@@ -16,13 +16,19 @@
 
 package pl.unity.gradle.plugin.lazycredentials;
 
+import groovy.lang.Closure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 public class LazyCredentialsPlugin implements Plugin<Project> {
 	
 	@Override
-	public void apply(Project project) {
-		project.getExtensions().create("lazyCredentials", LazyCredentialsExtension.class, project);
+	public void apply(final Project project) {
+		project.getExtensions().getExtraProperties().set("lazyCredentials", new Closure<LazyCredentials>(project) {
+			@Override
+			public LazyCredentials call(Object... args) {
+				return new LazyCredentialsExtension(project).configure((Closure) args[0]);
+			}
+		});
 	}
 }

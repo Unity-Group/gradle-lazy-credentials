@@ -24,10 +24,9 @@ import groovy.lang.Closure;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LazyCredentialsExtension implements Configurable<LazyCredentials> {
+public class LazyCredentialsExtension {
 	private final Project project;
 	
-	@Override
 	public LazyCredentials configure(Closure c) {
 		LazyCredentials credentials = new LazyCredentials(project);
 
