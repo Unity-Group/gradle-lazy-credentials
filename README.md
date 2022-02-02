@@ -1,3 +1,17 @@
+Development discontinued
+============
+
+In newer gradle versions this plugin no longer works and we are not planning
+to fix it. The biggest problem - eager initialization of properties - is 
+solved in gradle itself. While it still provides a popup that's useful
+when you don't want to store your password in any form we don't feel like 
+it's really worth the effort and the hacks it needed!
+
+https://docs.gradle.org/current/samples/sample_publishing_credentials.html
+
+
+Old docs follow:
+
 Lazy credentials gradle plugin
 ==============================
 
